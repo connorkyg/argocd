@@ -16,7 +16,3 @@ spec:
       containers:
         - name: cicd-tools
           image: itzconnor/cicd-tools
-          command: [ "/bin/bash" ]
-          args:
-            - -c
-            - "touch /shared_data/copy.done"
