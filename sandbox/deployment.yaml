@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-helloworld-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: argocd-helloworld
+  template:
+    metadata:
+      labels:
+        name: argocd-helloworld
+    spec:
+      containers:
+      - name: argocd-helloworld
+        image: nginx
+        resources:
+          limits:
+            memory: "64Mi"
+            cpu: "0.2"
+        ports:
+        - containerPort: 80
