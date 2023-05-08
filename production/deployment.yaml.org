@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tools
+  namespace: deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tools
+  template:
+    metadata:
+      labels:
+        app: tools
+    spec:
+      containers:
+        - name: cicd-tools
+          image: itzconnor/cicd-tools
+          volumeMounts:
+            - name: cicd-volume
+              mountPath: /shared_data
+          command: [ "/bin/bash" ]
+          args:
+            - -c
+            - "cp -R /cicd/* /shared_data/ && touch /shared_data/copy.done"
+      volumes:
+        - name: cicd-volume
+          emptyDir: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-detect
+  namespace: deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-detect
+  template:
+    metadata:
+      labels:
+        app: app-detect
+    spec:
+      containers:
+        - name: me-auto
+          image: itzconnor/me-auto
+          env:
+            - name: CONTAINER_NAME
+              value: my-container
+            - name: IMAGE_NAME
+              value: itzconnor/me-auto
+          volumeMounts:
+            - name: cicd-volume
+              mountPath: /cicd
+          command: [ "/bin/bash" ]
+          args:
+            - -c
+            - |
+              while [ ! -f /cicd/copy.done ]; do sleep 1; done && git clone -b test http://root:glpat-nwLuWrsB-p_1G4MQ_BVw@192.168.203.144/lab/dev.git /git/solution && git clone http://root:glpat-nwLuWrsB-p_1G4MQ_BVw@192.168.203.144/lab/slack.git /root/slack && cp -pr /cicd/pattern/MI_FMMCFG.dump /git/solution && export PERL5LIB=/core/remote:/core/ext:/core/lib/COMMON:/core/lib/PERL_LIB && /opt/ActivePerl-5.14/bin/perl /git/solution/MI_FMM_Unix.pl --batch --debug --monitor_path='/cicd/detection/malurl' --monitor --noconfirm > /dev/null; python3 /root/slack/slack.py
+      volumes:
+        - name: cicd-volume
+          emptyDir: {}
+      initContainers:
+        - name: wait-for-tools
+          image: itzconnor/cicd-tools
+          volumeMounts:
+            - name: cicd-volume
+              mountPath: /shared_data
+          command: [ "/bin/bash" ]
+          args:
+            - -c
+            - "while [ ! -f /shared_data/copy.done ]; do sleep 1; done"
