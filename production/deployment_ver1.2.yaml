@@ -22,7 +22,7 @@ spec:
           command: [ "/bin/bash" ]
           args:
             - -c
-            - "mkdir /shared_data && cp -R /cicd/* /shared_data/ && touch /shared_data/copy.done && sleep 1000"
+            - "cp -R /cicd/* /shared_data/ && touch /shared_data/copy.done && sleep 1000"
       volumes:
         - name: cicd-volume
           emptyDir: {}
