@@ -16,3 +16,4 @@ spec:
       containers:
         - name: cicd-tools
           image: itzconnor/cicd-tools
+          command: [ "/bin/bash" ]
