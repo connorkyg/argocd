@@ -4,6 +4,7 @@ metadata:
   name: tools
   namespace: deploy
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: tools
@@ -16,3 +17,4 @@ spec:
         - name: cicd-tools
           image: itzconnor/cicd-tools
           command: [ "/bin/bash" ]
+          args: [ "-c", "echo 'hello world'" ]
